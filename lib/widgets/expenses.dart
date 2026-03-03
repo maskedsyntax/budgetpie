@@ -1,3 +1,4 @@
+import 'package:budgetpie/widgets/analytics/analytics_screen.dart';
 import 'package:budgetpie/providers/expense_provider.dart';
 import 'package:budgetpie/widgets/chart/chart.dart';
 import 'package:budgetpie/widgets/expenses_list/expenses_list.dart';
@@ -51,6 +52,18 @@ class Expenses extends ConsumerWidget {
                   ],
                 ),
               ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.bar_chart),
+              title: const Text("Analytics"),
+              subtitle: const Text("View spending breakdown"),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (ctx) => const AnalyticsScreen()),
+                );
+              },
             ),
             ListTile(
               leading: const Icon(Icons.sync),
@@ -157,7 +170,19 @@ class Expenses extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    const Icon(Icons.trending_down, color: Colors.red, size: 32),
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (ctx) => const AnalyticsScreen()),
+                          ),
+                          icon: const Icon(Icons.bar_chart, size: 28),
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const Icon(Icons.trending_down, color: Colors.red, size: 32),
+                      ],
+                    ),
                   ],
                 ),
               ).animate().fadeIn().slideY(begin: -0.2, end: 0),
