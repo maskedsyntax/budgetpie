@@ -1,3 +1,4 @@
+import 'package:budgetpie/providers/export_provider.dart';
 import 'package:budgetpie/widgets/analytics/analytics_screen.dart';
 import 'package:budgetpie/providers/expense_provider.dart';
 import 'package:budgetpie/widgets/chart/chart.dart';
@@ -63,6 +64,15 @@ class Expenses extends ConsumerWidget {
                   context,
                   MaterialPageRoute(builder: (ctx) => const AnalyticsScreen()),
                 );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.file_download),
+              title: const Text("Export to CSV"),
+              subtitle: const Text("Backup your data"),
+              onTap: () {
+                Navigator.pop(context);
+                ref.read(exportNotifierProvider.notifier).exportToCsv();
               },
             ),
             ListTile(
