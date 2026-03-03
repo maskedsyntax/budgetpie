@@ -26,13 +26,74 @@ class Expenses extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final expensesAsync = ref.watch(expensesNotifierProvider);
+    final filteredExpensesAsync = ref.watch(filteredExpensesProvider);
+    final currentFilter = ref.watch(categoryFilterProvider);
     final width = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      drawer: Drawer(
+        child: Column(
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primaryContainer,
+              ),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset('assets/budgetpie.png', height: 60),
+                    const SizedBox(height: 12),
+                    const Text(
+                      "BudgetPie Premium",
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.sync),
+              title: const Text("Cloud Sync"),
+              subtitle: const Text("Sync data across devices"),
+              trailing: Chip(
+                label: const Text("Coming Soon", style: TextStyle(fontSize: 10)),
+                backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.notifications_active),
+              title: const Text("Recurring Reminders"),
+              subtitle: const Text("Never miss a bill"),
+              trailing: Chip(
+                label: const Text("Coming Soon", style: TextStyle(fontSize: 10)),
+                backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.analytics),
+              title: const Text("AI Spending Insights"),
+              subtitle: const Text("Smart patterns detection"),
+              trailing: Chip(
+                label: const Text("Coming Soon", style: TextStyle(fontSize: 10)),
+                backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+              ),
+            ),
+            const Spacer(),
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text("v1.0.0", style: TextStyle(color: Colors.grey)),
+            ),
+          ],
+        ),
+      ),
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset('assets/budgetpie.png', height: 32),
+            Hero(
+              tag: 'logo',
+              child: Image.asset('assets/budgetpie.png', height: 32),
+            ),
             const SizedBox(width: 12),
             const Text("BudgetPie"),
           ],
@@ -53,8 +114,8 @@ class Expenses extends ConsumerWidget {
         ],
       ),
       body: expensesAsync.when(
-        data: (expenses) {
-          if (expenses.isEmpty) {
+        data: (allExpenses) {
+          if (allExpenses.isEmpty) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -74,7 +135,7 @@ class Expenses extends ConsumerWidget {
             );
           }
 
-          final totalSpending = expenses.fold<double>(0, (sum, item) => sum + item.amount);
+          final totalSpending = allExpenses.fold<double>(0, (sum, item) => sum + item.amount);
 
           return Column(
             children: [
@@ -101,40 +162,87 @@ class Expenses extends ConsumerWidget {
                 ),
               ).animate().fadeIn().slideY(begin: -0.2, end: 0),
               
-              if (width < 600) ...[
-                Chart(expenses: expenses).animate().fadeIn().scale(delay: 200.ms),
-                Expanded(
-                  child: ExpensesList(
-                    expenses: expenses,
-                    onDeleteExpense: (expense) {
-                      ref.read(expensesNotifierProvider.notifier).deleteExpense(expense);
-                      ScaffoldMessenger.of(context).clearSnackBars();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: const Text("Expense Deleted"),
-                          action: SnackBarAction(
-                            label: "Undo",
-                            onPressed: () => ref.read(expensesNotifierProvider.notifier).undoDelete(expense),
-                          ),
+              const SizedBox(height: 16),
+              
+              // Category Filter Bar
+              SizedBox(
+                height: 40,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: ChoiceChip(
+                        label: const Text("All"),
+                        selected: currentFilter == null,
+                        onSelected: (_) => ref.read(categoryFilterProvider.notifier).setFilter(null),
+                      ),
+                    ),
+                    ...ExpenseCategory.values.map((cat) {
+                      final isSelected = currentFilter == cat;
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: ChoiceChip(
+                          avatar: Icon(cat.icon, size: 14, color: isSelected ? Colors.white : null),
+                          label: Text(cat.label),
+                          selected: isSelected,
+                          onSelected: (selected) {
+                            ref.read(categoryFilterProvider.notifier).setFilter(selected ? cat : null);
+                          },
                         ),
                       );
-                    },
-                  ),
+                    }),
+                  ],
                 ),
-              ] else
-                Expanded(
-                  child: Row(
-                    children: [
-                      Expanded(child: Chart(expenses: expenses)),
-                      Expanded(
-                        child: ExpensesList(
-                          expenses: expenses,
-                          onDeleteExpense: (expense) => ref.read(expensesNotifierProvider.notifier).deleteExpense(expense),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              ).animate().fadeIn(delay: 100.ms),
+
+              filteredExpensesAsync.when(
+                data: (filteredExpenses) {
+                  return Expanded(
+                    child: Column(
+                      children: [
+                        if (width < 600) ...[
+                          Chart(expenses: filteredExpenses).animate().fadeIn().scale(delay: 200.ms),
+                          Expanded(
+                            child: ExpensesList(
+                              expenses: filteredExpenses,
+                              onDeleteExpense: (expense) {
+                                ref.read(expensesNotifierProvider.notifier).deleteExpense(expense);
+                                ScaffoldMessenger.of(context).clearSnackBars();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: const Text("Expense Deleted"),
+                                    action: SnackBarAction(
+                                      label: "Undo",
+                                      onPressed: () => ref.read(expensesNotifierProvider.notifier).undoDelete(expense),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ] else
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Expanded(child: Chart(expenses: filteredExpenses)),
+                                Expanded(
+                                  child: ExpensesList(
+                                    expenses: filteredExpenses,
+                                    onDeleteExpense: (expense) => ref.read(expensesNotifierProvider.notifier).deleteExpense(expense),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  );
+                },
+                loading: () => const Expanded(child: Center(child: CircularProgressIndicator())),
+                error: (err, stack) => Center(child: Text("Error: $err")),
+              ),
             ],
           );
         },

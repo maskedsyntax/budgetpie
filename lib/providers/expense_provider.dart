@@ -34,3 +34,20 @@ class ExpensesNotifier extends _$ExpensesNotifier {
     await addExpense(expense);
   }
 }
+
+@riverpod
+class CategoryFilter extends _$CategoryFilter {
+  @override
+  ExpenseCategory? build() => null;
+
+  void setFilter(ExpenseCategory? category) => state = category;
+}
+
+@riverpod
+Future<List<Expense>> filteredExpenses(FilteredExpensesRef ref) async {
+  final expenses = await ref.watch(expensesNotifierProvider.future);
+  final filter = ref.watch(categoryFilterProvider);
+  
+  if (filter == null) return expenses;
+  return expenses.where((e) => e.expenseCategory == filter).toList();
+}
