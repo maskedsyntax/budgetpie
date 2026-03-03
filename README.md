@@ -1,9 +1,9 @@
 <div align="center">
 
-<img src="assets/budgetpie.png" width="180" height="180" alt="BudgetPie Logo">
+<img src="assets/budgetpie.png" width="160" height="160" alt="BudgetPie Logo">
 
-# 🥧 BudgetPie
-### Reclaim Your Financial Clarity
+# BudgetPie
+### Modern expense tracking for mobile
 
 [![Status](https://img.shields.io/badge/Status-Active-success?style=for-the-badge)](https://github.com/maskedsyntax/budgetpie)
 [![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS-blue?style=for-the-badge)](https://flutter.dev)
@@ -11,38 +11,34 @@
 
 ---
 
-**BudgetPie** is a modern, intuitive, and privacy-focused expense tracker designed to help you slice through financial complexity. No more spreadsheets, no more guesswork—just a clean, beautiful interface that puts your spending patterns into perspective.
+BudgetPie is a Flutter-based application designed for straightforward, local-first expense management. It provides a clean interface to track spending patterns without the complexity of traditional accounting software.
 
-[**Explore the Roadmap**](#-the-premium-edge) • [**Getting Started**](#-getting-started)
+[**Features**](#features) • [**Roadmap**](#roadmap) • [**Getting Started**](#getting-started)
 
 </div>
 
-## ✨ What BudgetPie Does For You
+## Features
 
-Budgeting shouldn't be a chore. BudgetPie focuses on **speed, clarity, and visual feedback** so you can spend less time logging and more time saving.
-
-*   **📊 Insightful Visuals:** Instantly see your weekly spending trends with an interactive bar chart and category-wise pie charts.
-*   **⚡ Frictionless Logging:** Add expenses in seconds with a refined, animated interface that respects your time.
-*   **📁 Deep Categorization:** From daily groceries to one-time investments, everything has its place with over 10+ predefined categories.
-*   **🕵️ Precision Filtering:** Slice your data by category or date to see exactly where your money is going.
-*   **🔒 Privacy First:** Your financial data stays on your device. BudgetPie uses a high-performance, local NoSQL database (Hive) for instant, offline-first access.
+*   **Spending Visualization:** Weekly trend charts and category-based breakdowns.
+*   **Offline Storage:** High-performance local persistence using Hive.
+*   **Responsive UI:** Fluid animations and adaptive layouts for different screen sizes.
+*   **Data Export:** Capability to export expense history to CSV.
+*   **Granular Tracking:** Over 10+ predefined categories for detailed logging.
 
 ---
 
-## 🚀 The Premium Edge (Coming Soon)
+## Roadmap
 
-We’re building the future of personal finance. Our upcoming premium features are designed for users who want to take their financial management to the next level:
+Future updates plan to include:
 
-*   **☁️ Cloud Sync:** Securely sync your data across all your devices using Firebase Firestore.
-*   **🤖 AI Spending Insights:** Let machine learning detect overspending patterns and provide personalized saving recommendations.
-*   **📅 Recurring Reminders:** Never miss a bill again with automated reminders for your subscriptions and fixed costs.
-*   **💱 Multi-Currency Support:** Perfect for travelers and global freelancers.
+*   **Cloud Synchronization:** Optional cross-device sync via Firebase.
+*   **Recurring Expenses:** Automation for subscriptions and monthly bills.
+*   **Advanced Analytics:** Trend detection and spending insights.
+*   **Multi-Currency Support:** Support for international tracking.
 
 ---
 
-## 🛠 Getting Started
-
-To run BudgetPie locally for development:
+## Getting Started
 
 1.  **Clone the Repository:**
     ```bash
@@ -52,11 +48,11 @@ To run BudgetPie locally for development:
     ```bash
     flutter pub get
     ```
-3.  **Generate Code (Hive/Riverpod):**
+3.  **Generate Adapters:**
     ```bash
     dart run build_runner build --delete-conflicting-outputs
     ```
-4.  **Launch:**
+4.  **Run the App:**
     ```bash
     flutter run
     ```
@@ -65,6 +61,6 @@ To run BudgetPie locally for development:
 
 <div align="center">
 
-**BudgetPie — Because every penny counts, and every slice matters.**
+BudgetPie — Personal finance management made simple.
 
 </div>
