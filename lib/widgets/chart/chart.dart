@@ -1,6 +1,5 @@
 import 'package:budgetpie/models/expense.dart';
 import 'package:flutter/material.dart';
-
 import 'chart_bar.dart';
 
 class Chart extends StatelessWidget {
@@ -9,41 +8,36 @@ class Chart extends StatelessWidget {
   final List<Expense> expenses;
 
   List<ExpenseBucket> get buckets {
-    return [
-      ExpenseBucket.forCategory(expenses, ExpenseCategory.foodDining),
-      ExpenseBucket.forCategory(expenses, ExpenseCategory.entertainmentLeisure),
-      ExpenseBucket.forCategory(expenses, ExpenseCategory.travel),
-      ExpenseBucket.forCategory(expenses, ExpenseCategory.workBusiness),
-    ];
+    return ExpenseCategory.values.map((category) {
+      return ExpenseBucket.forCategory(expenses, category);
+    }).toList();
   }
 
   double get maxTotalExpense {
-    double maxTotalExpense = 0;
-
+    double max = 0;
     for (final bucket in buckets) {
-      if (bucket.totalExpense > maxTotalExpense) {
-        maxTotalExpense = bucket.totalExpense;
+      if (bucket.totalExpense > max) {
+        max = bucket.totalExpense;
       }
     }
-
-    return maxTotalExpense;
+    return max;
   }
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode =
-        MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    
     return Container(
       margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 12),
       width: double.infinity,
-      height: 180,
+      height: 200,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(24),
         gradient: LinearGradient(
           colors: [
-            Theme.of(context).colorScheme.primary.withOpacity(0.3),
-            Theme.of(context).colorScheme.primary.withOpacity(0.0),
+            Theme.of(context).colorScheme.primary.withOpacity(0.15),
+            Theme.of(context).colorScheme.primary.withOpacity(0.02),
           ],
           begin: Alignment.bottomCenter,
           end: Alignment.topCenter,
@@ -55,37 +49,33 @@ class Chart extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                for (final bucket in buckets) // alternative to map()
+                for (final bucket in buckets)
+                  if (bucket.totalExpense > 0 || buckets.where((b) => b.totalExpense > 0).length < 5)
                   ChartBar(
-                    fill:
-                        bucket.totalExpense == 0
-                            ? 0
-                            : bucket.totalExpense / maxTotalExpense,
+                    fill: maxTotalExpense == 0 ? 0 : bucket.totalExpense / maxTotalExpense,
                   ),
               ],
             ),
           ),
           const SizedBox(height: 12),
           Row(
-            children:
-                buckets
-                    .map(
-                      (bucket) => Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: Icon(
-                            categoryIcons[bucket.category],
-                            color:
-                                isDarkMode
-                                    ? Theme.of(context).colorScheme.secondary
-                                    : Theme.of(
-                                      context,
-                                    ).colorScheme.primary.withOpacity(0.7),
-                          ),
-                        ),
-                      ),
-                    )
-                    .toList(),
+            children: buckets.map((bucket) {
+              if (bucket.totalExpense == 0 && buckets.where((b) => b.totalExpense > 0).length >= 5) {
+                return const SizedBox.shrink();
+              }
+              return Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  child: Icon(
+                    bucket.category.icon,
+                    size: 18,
+                    color: isDarkMode
+                        ? Theme.of(context).colorScheme.secondary
+                        : Theme.of(context).colorScheme.primary.withOpacity(0.7),
+                  ),
+                ),
+              );
+            }).toList(),
           ),
         ],
       ),
